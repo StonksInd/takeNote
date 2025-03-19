@@ -1,4 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,6 +13,7 @@ export default function LoginScreen() {
     const [loading, setLoading] = useState(false);
     const [debug, setDebug] = useState("");
     const { signIn } = useAuth();
+    const router = useRouter();
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -88,6 +90,14 @@ export default function LoginScreen() {
                     Connexion
                 </Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+                style={tw`p-3 bg-gray-200 dark:bg-blue-200 rounded-lg mt-4`}
+                onPress={() => {
+                    router.push("/qr-scan");
+                }}
+            ></TouchableOpacity>
+
 
             {debug ? (
                 <View style={tw`p-4 bg-gray-200 dark:bg-gray-800 rounded-lg mt-4`}>
