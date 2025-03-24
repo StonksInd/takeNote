@@ -37,6 +37,7 @@ export default function LoginScreen() {
             });
 
             const rawText = await response.text();
+            alert(rawText);
             setDebug(
                 (prev) => prev + `Réponse brute: ${rawText.substring(0, 50)}...\n`
             );
@@ -96,7 +97,12 @@ export default function LoginScreen() {
                 onPress={() => {
                     router.push("/qr-scan");
                 }}
-            ></TouchableOpacity>
+            >
+                <Text style={tw`text-black dark:text-white text-center font-bold`}>
+                    Scanner un QR code
+                </Text>
+
+            </TouchableOpacity>
 
 
             {debug ? (

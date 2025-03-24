@@ -9,7 +9,8 @@ function QrScanScreen() {
     const [scanned, setScanned] = useState(false);
     const [loading, setLoading] = useState(false);
     const [debug, setDebug] = useState("");
-    const { signIn } = useAuth();
+    const auth = useAuth();
+    const signIn = auth?.signIn;
     const [permission, requestPermission] = useCameraPermissions();
     const cameraRef = useRef(null);
 
