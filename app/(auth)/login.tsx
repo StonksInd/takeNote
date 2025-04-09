@@ -37,7 +37,7 @@ export default function LoginScreen() {
             });
 
             const rawText = await response.text();
-            alert(rawText);
+
             setDebug(
                 (prev) => prev + `Réponse brute: ${rawText.substring(0, 50)}...\n`
             );
