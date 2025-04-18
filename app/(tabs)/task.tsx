@@ -28,13 +28,14 @@ export default function Task() {
                         Authorization: `Bearer ${userToken}`, // Replace with your actual token
                     },
                 }).then(response => response.json()).then(data => console.log(data));
+
             }} />
+
 
 
             <Button title="Click Batard" onPress={() => {
                 const taskData = {
                     description: "Nouvelle tâche",
-                    note_id: 11,
                     is_completed: false,
                     subtasks: [
                         { description: "Première sous-tâche", is_completed: false },
