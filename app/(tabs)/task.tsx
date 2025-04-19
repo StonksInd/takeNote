@@ -1,39 +1,65 @@
+import TaskList from '@/components/tasks/TaskList';
 import { useAuth } from '@/context/AuthContext';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Text } from 'react-native';
+import TaskForm from '@/components/tasks/TaskForm';
+
 import tw from 'twrnc';
+
+
+
 const apiUrl = "https://keep.kevindupas.com/api";
+type Subtask = {
+    id: number;
+    description: string;
+    is_completed: boolean;
+};
+
+type Note = {
+    id: number;
+    title: string;
+};
+
+type Task = {
+    id: number;
+    description: string;
+    is_completed: boolean;
+    user_id: number;
+    note_id: number | null;
+    created_at: string;
+    updated_at: string;
+    subtasks: Subtask[];
+    note?: Note;
+};
 
 
 export default function Task() {
     const { userToken } = useAuth();
+    const [data, setData] = useState<Task[] | null>(null);
+    const { getData } = useAuth();
 
 
-    // const response = fetch(`${apiUrl}/notes`, {
-    //     method: "GET",
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //         Accept: "application/json",
-    //     },
 
-    // }).then(response => response.json()).then(data => console.log(data));
+
+
+
+
     return (
         <>
-            <Button title="Click Me" onPress={() => {
-                const response = fetch(`${apiUrl}/tasks`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Accept: "application/json",
-                        Authorization: `Bearer ${userToken}`, // Replace with your actual token
-                    },
-                }).then(response => response.json()).then(data => console.log(data));
+            <Button title="Rafraîchir" onPress={() => {
+                async function fetchTasks() {
+                    const tasks = await getData("tasks", "GET");
+                    setData(tasks);
+                }
 
+                fetchTasks();
             }} />
 
 
+            {data && <TaskList tasks={data} />}
 
-            <Button title="Click Batard" onPress={() => {
+
+            {/* <Button title="Click Batard" onPress={() => {
                 const taskData = {
                     description: "Nouvelle tâche",
                     is_completed: false,
@@ -42,20 +68,15 @@ export default function Task() {
                         { description: "Deuxième sous-tâche", is_completed: false }
                     ]
                 };
+                async function newTasks() {
+                    const tasks = await getData("tasks", "POST", taskData);
+                    setData(tasks);
+                }
 
-                fetch(`${apiUrl}/tasks`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Accept: "application/json",
-                        Authorization: `Bearer ${userToken}`, // Remplace par ton vrai token
-                    },
-                    body: JSON.stringify(taskData),
-                })
-                    .then(response => response.json())
-                    .then(data => console.log("Tâche créée :", data))
-                    .catch(error => console.error("Erreur :", error));
-            }} />
+                newTasks();
+            }} /> */}
+            <TaskForm />
+
 
 
 

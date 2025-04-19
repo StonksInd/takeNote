@@ -8,15 +8,23 @@ import {
     useState,
 } from "react";
 
+
 type User = {
     id: number;
     name: string;
     email: string;
 };
 
+
+
 type AuthContextType = {
     signIn: (token: string, userData: User) => Promise<void>;
     signOut: () => Promise<void>;
+    getData: (
+        endpoint: "tasks" | "notes" | "categories",
+        method?: "GET" | "POST",
+        body?: object
+    ) => Promise<any>;
     isLoading: boolean;
     userToken: string | null;
     user: User | null;
@@ -28,10 +36,15 @@ const SECURE_USER_DATA_KEY = "secure_user_data";
 const AuthContext = createContext<AuthContextType>({
     signIn: async () => { },
     signOut: async () => { },
+    getData: async () => { },
     isLoading: true,
     userToken: null,
     user: null,
+
 });
+
+
+
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -41,6 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const router = useRouter();
     const segments = useSegments();
+    const apiUrl = "https://keep.kevindupas.com/api";
 
     const checkAndRedirect = useCallback(() => {
         const inAuthGroup = segments[0] === "(auth)";
@@ -144,14 +158,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
+
+    async function getData(
+        endpoint: "tasks" | "notes" | "categories",
+        method: "GET" | "POST" = "GET",
+        body?: object
+    ) {
+        try {
+            const response = await fetch(`${apiUrl}/${endpoint}`, {
+                method,
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                    Authorization: `Bearer ${userToken}`,
+                },
+                ...(method === "POST" && body
+                    ? { body: JSON.stringify(body) }
+                    : {}),
+            });
+
+            const jsonData = await response.json();
+
+            // Si c'est un objet avec `data`, retourne juste data
+            if (jsonData.data) return jsonData.data;
+
+            // Sinon, retourne tout (utile pour les erreurs ou autres)
+            return jsonData;
+        } catch (error) {
+            console.error(`Erreur ${method} sur ${endpoint} :`, error);
+            throw error;
+        }
+    }
+
+
     return (
         <AuthContext.Provider
             value={{
                 signIn,
                 signOut,
+                getData,
                 isLoading,
                 userToken,
                 user,
+
             }}
         >
             {children}
