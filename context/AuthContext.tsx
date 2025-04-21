@@ -21,8 +21,8 @@ type AuthContextType = {
     signIn: (token: string, userData: User) => Promise<void>;
     signOut: () => Promise<void>;
     getData: (
-        endpoint: "tasks" | "notes" | "categories",
-        method?: "GET" | "POST",
+        endpoint: string,
+        method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
         body?: object
     ) => Promise<any>;
     isLoading: boolean;
@@ -160,24 +160,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 
     async function getData(
-        endpoint: "tasks" | "notes" | "categories",
-        method: "GET" | "POST" = "GET",
+        endpoint: string,
+        method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" = "GET",
         body?: object
     ) {
         try {
-            const response = await fetch(`${apiUrl}/${endpoint}`, {
+            const options: RequestInit = {
                 method,
                 headers: {
                     "Content-Type": "application/json",
                     Accept: "application/json",
                     Authorization: `Bearer ${userToken}`,
-                },
-                ...(method === "POST" && body
-                    ? { body: JSON.stringify(body) }
-                    : {}),
-            });
+                }
+            };
+
+            // Ajouter le corps pour les méthodes qui en ont besoin
+            if (["POST", "PUT", "PATCH"].includes(method) && body) {
+                options.body = JSON.stringify(body);
+            }
+
+            console.log(`Requête ${method} à ${endpoint}:`,
+                typeof options.body === "string" ? JSON.parse(options.body) : "Pas de corps");
+
+            const response = await fetch(`${apiUrl}/${endpoint}`, options);
 
             const jsonData = await response.json();
+            console.log(`Réponse de ${endpoint}:`, jsonData);
 
             // Si c'est un objet avec `data`, retourne juste data
             if (jsonData.data) return jsonData.data;
@@ -185,7 +193,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             // Sinon, retourne tout (utile pour les erreurs ou autres)
             return jsonData;
         } catch (error) {
-            console.error(`Erreur ${method} sur ${endpoint} :`, error);
+            console.error(`Erreur ${method} sur ${endpoint}:`, error);
             throw error;
         }
     }

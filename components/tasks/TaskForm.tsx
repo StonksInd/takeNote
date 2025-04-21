@@ -3,7 +3,7 @@ import { TextInput, Button, View, Text, Modal, Pressable } from "react-native";
 import tw from "twrnc";
 import { useAuth } from "@/context/AuthContext";
 
-export default function TaskForm() {
+export default function TaskForm({ refreshTasks }: { refreshTasks: () => void }) {
     const { getData } = useAuth();
     const [description, setDescription] = useState("");
     const [loading, setLoading] = useState(false);
@@ -33,6 +33,7 @@ export default function TaskForm() {
             setDescription("");
             setSubtasks([]);
             setModalVisible(false);
+            refreshTasks();
         } catch (error) {
             setMessage("❌ Erreur lors de la création.");
         } finally {

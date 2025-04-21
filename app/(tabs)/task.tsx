@@ -1,14 +1,10 @@
+// app/task.tsx
 import TaskList from '@/components/tasks/TaskList';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
-import { Button, Text } from 'react-native';
+import { Button } from 'react-native';
 import TaskForm from '@/components/tasks/TaskForm';
 
-import tw from 'twrnc';
-
-
-
-const apiUrl = "https://keep.kevindupas.com/api";
 type Subtask = {
     id: number;
     description: string;
@@ -32,57 +28,38 @@ type Task = {
     note?: Note;
 };
 
-
 export default function Task() {
-    const { userToken } = useAuth();
+    const { userToken, getData } = useAuth();
     const [data, setData] = useState<Task[] | null>(null);
-    const { getData } = useAuth();
 
+    const fetchTasks = async () => {
+        try {
+            const tasks = await getData("tasks", "GET");
+            setData(tasks);
+        } catch (error) {
+            console.error("Erreur lors du chargement des tâches:", error);
+        }
+    };
 
-
-
-
-
+    useEffect(() => {
+        fetchTasks();
+    }, []);
 
     return (
         <>
-            <Button title="Rafraîchir" onPress={() => {
-                async function fetchTasks() {
-                    const tasks = await getData("tasks", "GET");
-                    setData(tasks);
-                }
+            <Button
+                title="Rafraîchir"
+                onPress={fetchTasks}
+            />
 
-                fetchTasks();
-            }} />
+            {data && (
+                <TaskList
+                    tasks={data}
+                    refreshTasks={fetchTasks}
+                />
+            )}
 
-
-            {data && <TaskList tasks={data} />}
-
-
-            {/* <Button title="Click Batard" onPress={() => {
-                const taskData = {
-                    description: "Nouvelle tâche",
-                    is_completed: false,
-                    subtasks: [
-                        { description: "Première sous-tâche", is_completed: false },
-                        { description: "Deuxième sous-tâche", is_completed: false }
-                    ]
-                };
-                async function newTasks() {
-                    const tasks = await getData("tasks", "POST", taskData);
-                    setData(tasks);
-                }
-
-                newTasks();
-            }} /> */}
-            <TaskForm />
-
-
-
-
+            <TaskForm refreshTasks={fetchTasks} />
         </>
-
     );
 }
-
-
