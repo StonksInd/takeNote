@@ -22,7 +22,7 @@ export default function Index() {
       }
     >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
+        <ThemedText type="title">KEEP NOTE</ThemedText>
       </ThemedView>
       <ThemedText>
         {user ? `Welcome, ${user.name}!` : "Welcome to your new app!"}

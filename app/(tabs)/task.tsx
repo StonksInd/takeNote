@@ -1,65 +1,35 @@
-// app/task.tsx
-import TaskList from '@/components/tasks/TaskList';
-import { useAuth } from '@/context/AuthContext';
-import { useEffect, useState } from 'react';
-import { Button } from 'react-native';
-import TaskForm from '@/components/tasks/TaskForm';
+import { useState } from "react";
+import { View, Button } from "react-native";
+import tw from "twrnc";
+import TaskList from "@/components/tasks/TaskList";
+import TaskModal from "@/components/tasks/TaskModal";
 
-type Subtask = {
-    id: number;
-    description: string;
-    is_completed: boolean;
-};
-
-type Note = {
-    id: number;
-    title: string;
-};
-
-type Task = {
-    id: number;
-    description: string;
-    is_completed: boolean;
-    user_id: number;
-    note_id: number | null;
-    created_at: string;
-    updated_at: string;
-    subtasks: Subtask[];
-    note?: Note;
-};
-
-export default function Task() {
-    const { userToken, getData } = useAuth();
-    const [data, setData] = useState<Task[] | null>(null);
-
-    const fetchTasks = async () => {
-        try {
-            const tasks = await getData("tasks", "GET");
-            setData(tasks);
-        } catch (error) {
-            console.error("Erreur lors du chargement des tâches:", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchTasks();
-    }, []);
+export default function TaskScreen() {
+    const [modalVisible, setModalVisible] = useState(false);
 
     return (
-        <>
-            <Button
-                title="Rafraîchir"
-                onPress={fetchTasks}
-            />
+        <View style={tw`flex-1`}>
+            <TaskList />
 
-            {data && (
-                <TaskList
-                    tasks={data}
-                    refreshTasks={fetchTasks}
+            <View style={tw`absolute bottom-4 right-4`}>
+                <Button
+                    title="+"
+                    onPress={() => setModalVisible(true)}
                 />
-            )}
+            </View>
 
-            <TaskForm refreshTasks={fetchTasks} />
-        </>
+            <TaskModal
+                task={{
+                    id: 0,
+                    description: "",
+                    is_completed: false,
+                    note_id: null,
+                    subtasks: []
+                }}
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                refreshTasks={() => { }}
+            />
+        </View>
     );
 }

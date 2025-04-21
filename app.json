@@ -45,6 +45,9 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "assetBundlePatterns": [
+      "node_modules/react-native-pell-rich-editor/img/*"
+    ]
   }
 }
