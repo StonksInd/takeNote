@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import { View, Text, FlatList, SafeAreaView, ActivityIndicator, Dimensions, TextInput, Pressable, ScrollView } from "react-native";
-import tw from "twrnc";
-import { useAuth } from "@/context/AuthContext";
-import NoteCard from "./NoteCard";
-import NoteModal from "./NoteModal";
+import { useState, useEffect } from 'react';
+import { View, Text, FlatList, SafeAreaView, ActivityIndicator, Dimensions, TextInput, Pressable, ScrollView } from 'react-native';
+import tw from 'twrnc';
+import { useAuth } from '@/context/AuthContext';
+import NoteCard from './NoteCard';
+import NoteModal from './NoteModal';
+import * as Crypto from 'expo-crypto';
 
 type Category = {
     id: number;
@@ -20,49 +21,42 @@ type Note = {
     categories: Category[];
 };
 
-export default function NoteList({
-    gridView = false
-}: {
-    gridView?: boolean
-}) {
+export default function NoteList({ gridView = false }) {
     const { getData } = useAuth();
     const [notes, setNotes] = useState<Note[]>([]);
     const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
-    const [searchText, setSearchText] = useState("");
+    const [searchText, setSearchText] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
 
-    const screenWidth = Dimensions.get("window").width;
+    const screenWidth = Dimensions.get('window').width;
     const numColumns = gridView ? 2 : 1;
 
     const fetchNotesAndCategories = async () => {
         setLoading(true);
         setError(null);
         try {
-
             const [notesData, categoriesData] = await Promise.all([
-                getData("notes"),
-                getData("categories")
+                getData('notes'),
+                getData('categories'),
             ]);
 
             setNotes(Array.isArray(notesData) ? notesData : []);
             setCategories(Array.isArray(categoriesData) ? categoriesData : []);
         } catch (err) {
-            console.error("Erreur lors du chargement:", err);
-            setError("Impossible de charger les données. Veuillez réessayer.");
+            console.error('Erreur lors du chargement:', err);
+            setError('Impossible de charger les données. Veuillez réessayer.');
         } finally {
             setLoading(false);
         }
     };
 
-
     useEffect(() => {
         let result = notes;
-
 
         if (selectedCategory) {
             result = result.filter(note =>
@@ -70,8 +64,7 @@ export default function NoteList({
             );
         }
 
-
-        if (searchText.trim() !== "") {
+        if (searchText.trim() !== '') {
             result = result.filter(note =>
                 note.title.toLowerCase().includes(searchText.toLowerCase()) ||
                 note.content.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -103,7 +96,7 @@ export default function NoteList({
     };
 
     const clearAllFilters = () => {
-        setSearchText("");
+        setSearchText('');
         setSelectedCategory(null);
     };
 
@@ -142,7 +135,6 @@ export default function NoteList({
 
     return (
         <SafeAreaView style={tw`flex-1`}>
-
             <View style={tw`px-4 py-2 bg-white`}>
                 <TextInput
                     style={tw`border border-gray-300 rounded-lg px-4 py-2 bg-white mb-2`}
@@ -151,7 +143,6 @@ export default function NoteList({
                     onChangeText={setSearchText}
                     clearButtonMode="while-editing"
                 />
-
 
                 <ScrollView
                     horizontal
@@ -220,7 +211,7 @@ export default function NoteList({
                     keyExtractor={(item) => item.id.toString()}
                     contentContainerStyle={tw`p-2`}
                     numColumns={numColumns}
-                    key={gridView ? "grid" : "list"}
+                    key={gridView ? 'grid' : 'list'}
                     columnWrapperStyle={gridView ? tw`justify-between` : undefined}
                 />
             )}

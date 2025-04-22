@@ -1,25 +1,29 @@
-import { useState } from "react";
-import { TextInput, Button, View, Text, Modal, Pressable } from "react-native";
-import tw from "twrnc";
-import { useAuth } from "@/context/AuthContext";
+import { useState } from 'react';
+import { TextInput, Button, View, Text, Modal, Pressable } from 'react-native';
+import tw from 'twrnc';
+import { useAuth } from '@/context/AuthContext';
 
-export default function TaskForm({ refreshTasks }: { refreshTasks: () => void }) {
+interface TaskFormProps {
+    refreshTasks: () => void;
+}
+
+export default function TaskForm({ refreshTasks }: TaskFormProps) {
     const { getData } = useAuth();
-    const [description, setDescription] = useState("");
+    const [description, setDescription] = useState('');
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState('');
     const [subtasks, setSubtasks] = useState<Array<{ description: string; is_completed: boolean }>>([]);
-    const [subDescription, setSubDescription] = useState("");
+    const [subDescription, setSubDescription] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleSubmit = async () => {
         if (!description.trim()) {
-            setMessage("Merci de renseigner une description.");
+            setMessage('Merci de renseigner une description.');
             return;
         }
 
         setLoading(true);
-        setMessage("");
+        setMessage('');
 
         try {
             const newTask = {
@@ -28,14 +32,14 @@ export default function TaskForm({ refreshTasks }: { refreshTasks: () => void })
                 subtasks,
             };
 
-            await getData("tasks", "POST", newTask);
-            setMessage("✅ Tâche créée !");
-            setDescription("");
+            await getData('tasks', 'POST', newTask);
+            setMessage('✅ Tâche créée !');
+            setDescription('');
             setSubtasks([]);
             setModalVisible(false);
             refreshTasks();
         } catch (error) {
-            setMessage("❌ Erreur lors de la création.");
+            setMessage('❌ Erreur lors de la création.');
         } finally {
             setLoading(false);
         }
@@ -43,7 +47,7 @@ export default function TaskForm({ refreshTasks }: { refreshTasks: () => void })
 
     const addSubTask = () => {
         if (!subDescription.trim()) {
-            setMessage("Merci de renseigner une description.");
+            setMessage('Merci de renseigner une description.');
             return;
         }
 
@@ -53,8 +57,8 @@ export default function TaskForm({ refreshTasks }: { refreshTasks: () => void })
         };
 
         setSubtasks([...subtasks, newSubTask]);
-        setSubDescription("");
-        setMessage("");
+        setSubDescription('');
+        setMessage('');
     };
 
     return (
@@ -78,7 +82,7 @@ export default function TaskForm({ refreshTasks }: { refreshTasks: () => void })
                             onChangeText={setDescription}
                         />
                         <Button
-                            title={loading ? "Création..." : "Créer la tâche"}
+                            title={loading ? 'Création...' : 'Créer la tâche'}
                             onPress={handleSubmit}
                             disabled={loading}
                         />
@@ -104,8 +108,8 @@ export default function TaskForm({ refreshTasks }: { refreshTasks: () => void })
                             </View>
                         )}
 
-                        {message !== "" && (
-                            <Text style={tw`mt-4 text-center ${message.includes("✅") ? "text-green-600" : "text-red-600"}`}>
+                        {message !== '' && (
+                            <Text style={tw`mt-4 text-center ${message.includes('✅') ? 'text-green-600' : 'text-red-600'}`}>
                                 {message}
                             </Text>
                         )}

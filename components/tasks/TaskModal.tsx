@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { Modal, Pressable, Text, TextInput, View, Button, Alert, ScrollView } from "react-native";
-import tw from "twrnc";
-import { useAuth } from "@/context/AuthContext";
-import NoteSelector from "../notes/NoteSelector";
+import { useState, useEffect } from 'react';
+import { Modal, Pressable, Text, TextInput, View, Button, Alert, ScrollView } from 'react-native';
+import tw from 'twrnc';
+import { useAuth } from '@/context/AuthContext';
+import NoteSelector from '../notes/NoteSelector';
 
 type Subtask = {
     id?: number;
@@ -29,29 +29,29 @@ export default function TaskModal({ task, visible, onClose, refreshTasks }: Task
     const { getData } = useAuth();
     const [editedTask, setEditedTask] = useState<Task>({ ...task });
     const [loading, setLoading] = useState(false);
-    const [newSubtask, setNewSubtask] = useState("");
+    const [newSubtask, setNewSubtask] = useState('');
     const [notes, setNotes] = useState([]);
 
     useEffect(() => {
         if (visible) {
             setEditedTask({ ...task });
-            setNewSubtask("");
+            setNewSubtask('');
             fetchNotes();
         }
     }, [visible, task]);
 
     const fetchNotes = async () => {
         try {
-            const data = await getData("notes");
+            const data = await getData('notes');
             setNotes(data);
         } catch (error) {
-            console.error("Error fetching notes:", error);
+            console.error('Error fetching notes:', error);
         }
     };
 
     const handleUpdateTask = async () => {
         if (!editedTask.description.trim()) {
-            Alert.alert("Erreur", "La description ne peut pas être vide");
+            Alert.alert('Erreur', 'La description ne peut pas être vide');
             return;
         }
 
@@ -64,12 +64,12 @@ export default function TaskModal({ task, visible, onClose, refreshTasks }: Task
                 subtasks: editedTask.subtasks
             };
 
-            await getData(`tasks/${task.id}`, "PUT", taskToUpdate);
+            await getData(`tasks/${task.id}`, 'PUT', taskToUpdate);
             refreshTasks();
             onClose();
         } catch (error) {
-            console.error("Error updating task:", error);
-            Alert.alert("Erreur", "Impossible de mettre à jour la tâche");
+            console.error('Error updating task:', error);
+            Alert.alert('Erreur', 'Impossible de mettre à jour la tâche');
         } finally {
             setLoading(false);
         }
@@ -77,22 +77,22 @@ export default function TaskModal({ task, visible, onClose, refreshTasks }: Task
 
     const handleDeleteTask = async () => {
         Alert.alert(
-            "Confirmation",
-            "Êtes-vous sûr de vouloir supprimer cette tâche?",
+            'Confirmation',
+            'Êtes-vous sûr de vouloir supprimer cette tâche?',
             [
-                { text: "Annuler", style: "cancel" },
+                { text: 'Annuler', style: 'cancel' },
                 {
-                    text: "Supprimer",
-                    style: "destructive",
+                    text: 'Supprimer',
+                    style: 'destructive',
                     onPress: async () => {
                         setLoading(true);
                         try {
-                            await getData(`tasks/${task.id}`, "DELETE");
+                            await getData(`tasks/${task.id}`, 'DELETE');
                             refreshTasks();
                             onClose();
                         } catch (error) {
-                            console.error("Error deleting task:", error);
-                            Alert.alert("Erreur", "Impossible de supprimer la tâche");
+                            console.error('Error deleting task:', error);
+                            Alert.alert('Erreur', 'Impossible de supprimer la tâche');
                         } finally {
                             setLoading(false);
                         }
@@ -116,7 +116,7 @@ export default function TaskModal({ task, visible, onClose, refreshTasks }: Task
                 { description: newSubtask.trim(), is_completed: false }
             ]
         });
-        setNewSubtask("");
+        setNewSubtask('');
     };
 
     const toggleSubtaskStatus = (index: number) => {
@@ -147,7 +147,7 @@ export default function TaskModal({ task, visible, onClose, refreshTasks }: Task
                 <View style={tw`bg-white w-11/12 rounded-xl p-4 max-h-[90%]`}>
                     <ScrollView>
                         <Text style={tw`text-lg font-bold mb-4`}>
-                            {task.id ? "Modifier la tâche" : "Nouvelle tâche"}
+                            {task.id ? 'Modifier la tâche' : 'Nouvelle tâche'}
                         </Text>
 
                         <TextInput
@@ -168,10 +168,10 @@ export default function TaskModal({ task, visible, onClose, refreshTasks }: Task
                                 onPress={toggleTaskStatus}
                                 style={tw`mr-2`}
                             >
-                                <Text>{editedTask.is_completed ? "✅" : "◻️"}</Text>
+                                <Text>{editedTask.is_completed ? '✅' : '◻️'}</Text>
                             </Pressable>
                             <Text>
-                                {editedTask.is_completed ? "Terminée" : "Active"}
+                                {editedTask.is_completed ? 'Terminée' : 'Active'}
                             </Text>
                         </View>
 
@@ -182,7 +182,7 @@ export default function TaskModal({ task, visible, onClose, refreshTasks }: Task
                                     onPress={() => toggleSubtaskStatus(index)}
                                     style={tw`mr-2`}
                                 >
-                                    <Text>{subtask.is_completed ? "✓" : "○"}</Text>
+                                    <Text>{subtask.is_completed ? '✓' : '○'}</Text>
                                 </Pressable>
                                 <TextInput
                                     style={tw`flex-1 border border-gray-300 rounded px-2 py-1 bg-white`}

@@ -1,46 +1,44 @@
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "expo-router";
-import { useState } from "react";
-import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import tw from "twrnc";
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import tw from 'twrnc';
 
-const apiUrl = "https://keep.kevindupas.com/api";
+const apiUrl = 'https://keep.kevindupas.com/api';
 
 export default function LoginScreen() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [debug, setDebug] = useState("");
+    const [debug, setDebug] = useState('');
     const { signIn } = useAuth();
     const router = useRouter();
 
     const handleLogin = async () => {
         if (!email || !password) {
-            Alert.alert("Erreur", "Veuillez remplir tous les champs");
+            Alert.alert('Erreur', 'Veuillez remplir tous les champs');
             return;
         }
 
         setLoading(true);
-        setDebug("Démarre la connexion...");
+        setDebug('Démarre la connexion...');
 
         try {
             setDebug((prev) => prev + `URL de l'API: ${apiUrl}/login`);
 
             const response = await fetch(`${apiUrl}/login`, {
-                method: "POST",
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
                 },
                 body: JSON.stringify({ email, password }),
             });
 
             const rawText = await response.text();
 
-            setDebug(
-                (prev) => prev + `Réponse brute: ${rawText.substring(0, 50)}...\n`
-            );
+            setDebug((prev) => prev + `Réponse brute: ${rawText.substring(0, 50)}...\n`);
 
             let data;
             try {
@@ -56,6 +54,8 @@ export default function LoginScreen() {
             await signIn(data.access_token, data.user);
         } catch (error) {
             setDebug((prev) => prev + `Erreur: ${(error as Error).message}`);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -95,15 +95,13 @@ export default function LoginScreen() {
             <TouchableOpacity
                 style={tw`p-3 bg-gray-200 dark:bg-blue-200 rounded-lg mt-4`}
                 onPress={() => {
-                    router.push("/qr-scan");
+                    router.push('/qr-scan');
                 }}
             >
                 <Text style={tw`text-black dark:text-white text-center font-bold`}>
                     Scanner un QR code
                 </Text>
-
             </TouchableOpacity>
-
 
             {debug ? (
                 <View style={tw`p-4 bg-gray-200 dark:bg-gray-800 rounded-lg mt-4`}>

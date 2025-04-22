@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, Pressable, TextInput, FlatList, StyleSheet, Alert } from 'react-native';
 import tw from 'twrnc';
 import { useAuth } from '@/context/AuthContext';
 import ColorPicker from 'react-native-wheel-color-picker';
 import { Button } from 'react-native';
-
 
 type Category = {
     id: number;
@@ -165,7 +163,6 @@ export default function CategoryManager() {
                 )}
             />
 
-
             <Modal
                 visible={modalVisible}
                 transparent={true}
@@ -211,17 +208,9 @@ export default function CategoryManager() {
                                 disabled={loading}
                             />
                         </View>
-                        <View style={tw`bg-blue-500 ml-2 rounded-lg`}>
-                            <Button
-                                title="Créer"
-                                onPress={handleCreate}
-                                disabled={loading}
-                            />
-                        </View>
                     </View>
                 </View>
             </Modal>
-
 
             <Modal
                 visible={editModalVisible}
@@ -267,8 +256,6 @@ export default function CategoryManager() {
                                 onPress={handleUpdate}
                                 disabled={loading}
                             />
-                        </View>
-                        <View style={tw`bg-blue-500 ml-2 rounded-lg`}>
                         </View>
                     </View>
                 </View>

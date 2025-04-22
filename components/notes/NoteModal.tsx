@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, Modal, Pressable, ScrollView, Alert } from "react-native";
-import tw from "twrnc";
-import { useAuth } from "@/context/AuthContext";
+import { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, Modal, Pressable, ScrollView, Alert } from 'react-native';
+import tw from 'twrnc';
+import { useAuth } from '@/context/AuthContext';
+import NoteSelector from '../notes/NoteSelector';
 
 type Category = {
     id: number;
@@ -30,12 +31,11 @@ export default function NoteModal({
     onClose,
     refreshNotes
 }: {
-    note: Note,
-    visible: boolean,
-    onClose: () => void,
-    refreshNotes: () => void
+    note: Note;
+    visible: boolean;
+    onClose: () => void;
+    refreshNotes: () => void;
 }) {
-
     const { getData } = useAuth();
     const [editMode, setEditMode] = useState(false);
     const [title, setTitle] = useState(note.title);
@@ -53,7 +53,6 @@ export default function NoteModal({
         }
     }, [visible, editMode]);
 
-    // Réinitialiser les états lorsque la note change
     useEffect(() => {
         setTitle(note.title);
         setContent(note.content);
@@ -64,11 +63,11 @@ export default function NoteModal({
     const fetchCategories = async () => {
         setLoadingCategories(true);
         try {
-            const data = await getData("categories");
+            const data = await getData('categories');
             setAllCategories(Array.isArray(data) ? data : []);
         } catch (error) {
-            console.error("Erreur lors du chargement des catégories:", error);
-            Alert.alert("Erreur", "Impossible de charger les catégories");
+            console.error('Erreur lors du chargement des catégories:', error);
+            Alert.alert('Erreur', 'Impossible de charger les catégories');
         } finally {
             setLoadingCategories(false);
         }
@@ -84,7 +83,7 @@ export default function NoteModal({
 
     const handleUpdate = async () => {
         if (!title.trim()) {
-            Alert.alert("Erreur", "Le titre ne peut pas être vide");
+            Alert.alert('Erreur', 'Le titre ne peut pas être vide');
             return;
         }
 
@@ -96,13 +95,13 @@ export default function NoteModal({
                 categories: selectedCategoryIds
             };
 
-            await getData(`notes/${note.id}`, "PUT", updatedNote);
-            Alert.alert("Succès", "Note mise à jour avec succès");
+            await getData(`notes/${note.id}`, 'PUT', updatedNote);
+            Alert.alert('Succès', 'Note mise à jour avec succès');
             setEditMode(false);
             refreshNotes();
         } catch (error) {
-            console.error("Erreur lors de la mise à jour de la note:", error);
-            Alert.alert("Erreur", "Impossible de mettre à jour la note");
+            console.error('Erreur lors de la mise à jour de la note:', error);
+            Alert.alert('Erreur', 'Impossible de mettre à jour la note');
         } finally {
             setLoading(false);
         }
@@ -110,23 +109,23 @@ export default function NoteModal({
 
     const handleDelete = async () => {
         Alert.alert(
-            "Confirmation",
-            "Êtes-vous sûr de vouloir supprimer cette note ?",
+            'Confirmation',
+            'Êtes-vous sûr de vouloir supprimer cette note ?',
             [
-                { text: "Annuler", style: "cancel" },
+                { text: 'Annuler', style: 'cancel' },
                 {
-                    text: "Supprimer",
-                    style: "destructive",
+                    text: 'Supprimer',
+                    style: 'destructive',
                     onPress: async () => {
                         setLoading(true);
                         try {
-                            await getData(`notes/${note.id}`, "DELETE");
-                            Alert.alert("Succès", "Note supprimée avec succès");
+                            await getData(`notes/${note.id}`, 'DELETE');
+                            Alert.alert('Succès', 'Note supprimée avec succès');
                             onClose();
                             refreshNotes();
                         } catch (error) {
-                            console.error("Erreur lors de la suppression de la note:", error);
-                            Alert.alert("Erreur", "Impossible de supprimer la note");
+                            console.error('Erreur lors de la suppression de la note:', error);
+                            Alert.alert('Erreur', 'Impossible de supprimer la note');
                         } finally {
                             setLoading(false);
                         }
@@ -151,7 +150,7 @@ export default function NoteModal({
                             key={category.id}
                             style={[
                                 tw`rounded-full px-3 py-1 mr-2 mb-2`,
-                                { backgroundColor: category.color + "40" }
+                                { backgroundColor: category.color + '40' }
                             ]}
                         >
                             <Text style={{ color: category.color }}>{category.name}</Text>
@@ -218,14 +217,14 @@ export default function NoteModal({
                                 {
                                     backgroundColor: selectedCategoryIds.includes(category.id)
                                         ? category.color
-                                        : category.color + "40"
+                                        : category.color + '40'
                                 }
                             ]}
                             disabled={loading}
                         >
                             <Text
                                 style={{
-                                    color: selectedCategoryIds.includes(category.id) ? "white" : category.color
+                                    color: selectedCategoryIds.includes(category.id) ? 'white' : category.color
                                 }}
                             >
                                 {category.name}
@@ -243,7 +242,7 @@ export default function NoteModal({
                     disabled={loading}
                 />
                 <Button
-                    title={loading ? "Enregistrement..." : "Enregistrer"}
+                    title={loading ? 'Enregistrement...' : 'Enregistrer'}
                     onPress={handleUpdate}
                     disabled={loading}
                 />

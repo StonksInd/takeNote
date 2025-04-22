@@ -1,5 +1,5 @@
-import { View, Text, Pressable } from "react-native";
-import tw from "twrnc";
+import { View, Text, Pressable } from 'react-native';
+import tw from 'twrnc';
 
 interface Note {
     id: string;

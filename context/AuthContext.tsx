@@ -1,13 +1,6 @@
-import * as SecureStore from "expo-secure-store";
-import { useRouter, useSegments } from "expo-router";
-import {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useState,
-} from "react";
-
+import * as SecureStore from 'expo-secure-store';
+import { useRouter, useSegments } from 'expo-router';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 type User = {
     id: number;
@@ -15,14 +8,12 @@ type User = {
     email: string;
 };
 
-
-
 type AuthContextType = {
     signIn: (token: string, userData: User) => Promise<void>;
     signOut: () => Promise<void>;
     getData: (
         endpoint: string,
-        method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
+        method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
         body?: object
     ) => Promise<any>;
     isLoading: boolean;
@@ -30,8 +21,8 @@ type AuthContextType = {
     user: User | null;
 };
 
-const SECURE_TOKEN_KEY = "secure_user_token";
-const SECURE_USER_DATA_KEY = "secure_user_data";
+const SECURE_TOKEN_KEY = 'secure_user_token';
+const SECURE_USER_DATA_KEY = 'secure_user_data';
 
 const AuthContext = createContext<AuthContextType>({
     signIn: async () => { },
@@ -40,11 +31,7 @@ const AuthContext = createContext<AuthContextType>({
     isLoading: true,
     userToken: null,
     user: null,
-
 });
-
-
-
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -54,15 +41,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const router = useRouter();
     const segments = useSegments();
-    const apiUrl = "https://keep.kevindupas.com/api";
+    const apiUrl = 'https://keep.kevindupas.com/api';
 
     const checkAndRedirect = useCallback(() => {
-        const inAuthGroup = segments[0] === "(auth)";
+        const inAuthGroup = segments[0] === '(auth)';
 
         if (!userToken && !inAuthGroup && !isLoading) {
-            router.replace("/(auth)/login");
+            router.replace('/(auth)/login');
         } else if (userToken && inAuthGroup) {
-            router.replace("/");
+            router.replace('/');
         }
     }, [userToken, isLoading, segments, router]);
 
@@ -87,24 +74,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         if (userInfo && userInfo.id && userInfo.email) {
                             setUser(userInfo);
                         } else {
-                            console.error(
-                                "Erreur lors de la récupération des données utilisateur"
-                            );
+                            console.error('Erreur lors de la récupération des données utilisateur');
                             await signOut();
                         }
                     } catch (error) {
-                        console.error(
-                            "Erreur lors de la conversion des données utilisateur en JSON",
-                            error
-                        );
+                        console.error('Erreur lors de la conversion des données utilisateur en JSON', error);
                         await signOut();
                     }
                 }
             } catch (error) {
-                console.error(
-                    "Erreur lors du chargement des informations de l'utilisateur",
-                    error
-                );
+                console.error('Erreur lors du chargement des informations de l\'utilisateur', error);
                 await signOut();
             } finally {
                 setIsLoading(false);
@@ -117,28 +96,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const signIn = async (token: string, userData: User) => {
         try {
             if (!token || !userData || !userData.id || !userData.email) {
-                throw new Error("Token or user data is missing");
+                throw new Error('Token or user data is missing');
             }
 
             const secureStoreOptions = {
                 keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK,
             };
 
-            await SecureStore.setItemAsync(
-                SECURE_TOKEN_KEY,
-                token,
-                secureStoreOptions
-            );
-            await SecureStore.setItemAsync(
-                SECURE_USER_DATA_KEY,
-                JSON.stringify(userData),
-                secureStoreOptions
-            );
+            await SecureStore.setItemAsync(SECURE_TOKEN_KEY, token, secureStoreOptions);
+            await SecureStore.setItemAsync(SECURE_USER_DATA_KEY, JSON.stringify(userData), secureStoreOptions);
 
             setUserToken(token);
             setUser(userData);
         } catch (error) {
-            console.error("Erreur lors de la connexion", error);
+            console.error('Erreur lors de la connexion', error);
             throw error;
         }
     };
@@ -151,53 +122,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUserToken(null);
             setUser(null);
         } catch (error) {
-            console.error("Erreur lors de la déconnexion", error);
+            console.error('Erreur lors de la déconnexion', error);
             setUserToken(null);
             setUser(null);
             throw error;
         }
     };
 
-
-    async function getData(
-        endpoint: string,
-        method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH" = "GET",
-        body?: object
-    ) {
+    async function getData(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' = 'GET', body?: object) {
         try {
             const options: RequestInit = {
                 method,
                 headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
                     Authorization: `Bearer ${userToken}`,
-                }
+                },
             };
 
-            // Ajouter le corps pour les méthodes qui en ont besoin
-            if (["POST", "PUT", "PATCH"].includes(method) && body) {
+            if (['POST', 'PUT', 'PATCH'].includes(method) && body) {
                 options.body = JSON.stringify(body);
             }
 
-            console.log(`Requête ${method} à ${endpoint}:`,
-                typeof options.body === "string" ? JSON.parse(options.body) : "Pas de corps");
+            console.log(`Requête ${method} à ${endpoint}:`, typeof options.body === 'string' ? JSON.parse(options.body) : 'Pas de corps');
 
             const response = await fetch(`${apiUrl}/${endpoint}`, options);
 
             const jsonData = await response.json();
             console.log(`Réponse de ${endpoint}:`, jsonData);
 
-            // Si c'est un objet avec `data`, retourne juste data
             if (jsonData.data) return jsonData.data;
 
-            // Sinon, retourne tout (utile pour les erreurs ou autres)
             return jsonData;
         } catch (error) {
             console.error(`Erreur ${method} sur ${endpoint}:`, error);
             throw error;
         }
     }
-
 
     return (
         <AuthContext.Provider
@@ -208,7 +169,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 isLoading,
                 userToken,
                 user,
-
             }}
         >
             {children}

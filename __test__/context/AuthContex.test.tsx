@@ -1,10 +1,8 @@
-// __test__/contexts/MockedAuthContext.test.tsx
-import React from "react";
-import { render, fireEvent } from "@testing-library/react-native";
-import { Text, Pressable } from "react-native";
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react-native';
+import { Text, Pressable } from 'react-native';
 
-// Alternative: Mock complet du contexte d'authentification
-jest.mock("../../context/AuthContext", () => ({
+jest.mock('../../context/AuthContext', () => ({
     useAuth: jest.fn().mockReturnValue({
         userToken: null,
         user: null,
@@ -14,23 +12,21 @@ jest.mock("../../context/AuthContext", () => ({
     }),
 }));
 
-// Importer après le mock
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from '../../context/AuthContext';
 
-// Composant simple avec le contexte mocké
 const TestComponent = () => {
     const { userToken, signIn, signOut } = useAuth();
 
     return (
         <>
-            <Text testID="status">{userToken ? "Connecté" : "Déconnecté"}</Text>
+            <Text testID="status">{userToken ? 'Connecté' : 'Déconnecté'}</Text>
             <Pressable
                 testID="login-button"
                 onPress={() =>
-                    signIn("test-token", {
+                    signIn('test-token', {
                         id: 1,
-                        name: "Test",
-                        email: "test@example.com",
+                        name: 'Test',
+                        email: 'test@example.com',
                     })
                 }
             >
@@ -43,23 +39,19 @@ const TestComponent = () => {
     );
 };
 
-describe("AuthContext (Mocké)", () => {
-    test("permet d'interagir avec les fonctions d'authentification", () => {
-        // Accéder au mock pour pouvoir le modifier
+describe('AuthContext (Mocké)', () => {
+    test('permet d\'interagir avec les fonctions d\'authentification', () => {
         const mockUseAuth = useAuth as jest.Mock;
 
-        // Configuration initiale - non connecté
         mockUseAuth.mockReturnValue({
             userToken: null,
             user: null,
             signIn: jest.fn().mockImplementation(() => {
-                // Mettre à jour la valeur retournée après signIn
                 mockUseAuth.mockReturnValue({
-                    userToken: "test-token",
-                    user: { id: 1, name: "Test", email: "test@example.com" },
+                    userToken: 'test-token',
+                    user: { id: 1, name: 'Test', email: 'test@example.com' },
                     signIn: jest.fn(),
                     signOut: jest.fn().mockImplementation(() => {
-                        // Retour à l'état déconnecté après signOut
                         mockUseAuth.mockReturnValue({
                             userToken: null,
                             user: null,
@@ -75,28 +67,64 @@ describe("AuthContext (Mocké)", () => {
             isLoading: false,
         });
 
-        // Rendu du composant
         const { getByTestId, rerender } = render(<TestComponent />);
 
-        // 1. Vérifier l'état initial (déconnecté)
-        expect(getByTestId("status").props.children).toBe("Déconnecté");
+        expect(getByTestId('status').props.children).toBe('Déconnecté');
 
-        // 2. Connecter l'utilisateur
-        fireEvent.press(getByTestId("login-button"));
+        fireEvent.press(getByTestId('login-button'));
 
-        // Forcer le re-rendu
         rerender(<TestComponent />);
 
-        // Vérifier que le statut a changé
-        expect(getByTestId("status").props.children).toBe("Connecté");
+        expect(getByTestId('status').props.children).toBe('Connecté');
 
-        // 3. Déconnecter l'utilisateur
-        fireEvent.press(getByTestId("logout-button"));
+        fireEvent.press(getByTestId('logout-button'));
 
-        // Forcer le re-rendu
         rerender(<TestComponent />);
 
-        // Vérifier que le statut est revenu à déconnecté
-        expect(getByTestId("status").props.children).toBe("Déconnecté");
+        expect(getByTestId('status').props.children).toBe('Déconnecté');
+    });
+
+    test('vérifie les erreurs de connexion', () => {
+        const mockUseAuth = useAuth as jest.Mock;
+
+        mockUseAuth.mockReturnValue({
+            userToken: null,
+            user: null,
+            signIn: jest.fn().mockImplementation(() => {
+                throw new Error('Erreur de connexion');
+            }),
+            signOut: jest.fn(),
+            isLoading: false,
+        });
+
+        const { getByTestId } = render(<TestComponent />);
+
+        expect(getByTestId('status').props.children).toBe('Déconnecté');
+
+        expect(() => fireEvent.press(getByTestId('login-button'))).toThrow('Erreur de connexion');
+
+        expect(getByTestId('status').props.children).toBe('Déconnecté');
+    });
+
+    test('vérifie les erreurs de déconnexion', () => {
+        const mockUseAuth = useAuth as jest.Mock;
+
+        mockUseAuth.mockReturnValue({
+            userToken: 'test-token',
+            user: { id: 1, name: 'Test', email: 'test@example.com' },
+            signIn: jest.fn(),
+            signOut: jest.fn().mockImplementation(() => {
+                throw new Error('Erreur de déconnexion');
+            }),
+            isLoading: false,
+        });
+
+        const { getByTestId } = render(<TestComponent />);
+
+        expect(getByTestId('status').props.children).toBe('Connecté');
+
+        expect(() => fireEvent.press(getByTestId('logout-button'))).toThrow('Erreur de déconnexion');
+
+        expect(getByTestId('status').props.children).toBe('Connecté');
     });
 });

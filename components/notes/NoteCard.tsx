@@ -1,6 +1,6 @@
-import { View, Text, Pressable } from "react-native";
-import tw from "twrnc";
-import { parse } from "node-html-parser";
+import { View, Text, Pressable } from 'react-native';
+import tw from 'twrnc';
+import { parse } from 'node-html-parser';
 
 type Category = {
     id: number;
@@ -21,26 +21,20 @@ export default function NoteCard({
     note,
     onPress,
     gridView = false
-}: {
-    note: Note,
-    onPress: (note: Note) => void,
-    gridView?: boolean
-}) {
-
+}: { note: Note; onPress: (note: Note) => void; gridView?: boolean }) {
     const getTextContent = (html: string) => {
         try {
             const root = parse(html);
-            return root.textContent.substring(0, 100) + (root.textContent.length > 100 ? "..." : "");
+            return root.textContent.substring(0, 100) + (root.textContent.length > 100 ? '...' : '');
         } catch (error) {
-            return html.substring(0, 100) + (html.length > 100 ? "..." : "");
+            return html.substring(0, 100) + (html.length > 100 ? '...' : '');
         }
     };
 
     return (
         <Pressable
             onPress={() => onPress(note)}
-            style={tw`bg-white rounded-lg shadow mb-4 overflow-hidden ${gridView ? "w-[48%]" : "w-full"
-                }`}
+            style={tw`bg-white rounded-lg shadow mb-4 overflow-hidden ${gridView ? 'w-[48%]' : 'w-full'}`}
         >
             <View style={tw`p-4`}>
                 <Text style={tw`text-lg font-bold mb-2`}>{note.title}</Text>
@@ -53,7 +47,7 @@ export default function NoteCard({
                                 key={category.id}
                                 style={[
                                     tw`rounded-full px-2 py-1 mr-1 mb-1`,
-                                    { backgroundColor: category.color + "40" }
+                                    { backgroundColor: category.color + '40' }
                                 ]}
                             >
                                 <Text style={{ color: category.color }}>{category.name}</Text>

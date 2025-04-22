@@ -1,5 +1,4 @@
-import { Stack } from "expo-router";
-
+import { Stack } from 'expo-router';
 
 export default function AuthLayout() {
     return (
@@ -9,15 +8,11 @@ export default function AuthLayout() {
                 <Stack.Screen
                     name="qr-scan"
                     options={{
-                        title: "Scan QR Code",
+                        title: 'Scan QR Code',
                         headerShown: true,
                     }}
-
                 />
             </Stack>
-
         </>
-
-    )
-
+    );
 }

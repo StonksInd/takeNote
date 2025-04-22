@@ -1,6 +1,6 @@
-import { View, TextInput, Button, Text } from "react-native";
-import tw from "twrnc";
-import { useState } from "react";
+import { View, TextInput, Button, Text } from 'react-native';
+import tw from 'twrnc';
+import { useState } from 'react';
 
 interface Filter {
     search: string;
@@ -40,17 +40,17 @@ export default function TaskFilter({
                         <Button
                             title="Toutes"
                             onPress={() => setFilter({ ...filter, is_completed: null })}
-                            color={filter.is_completed === null ? "#3B82F6" : "#9CA3AF"}
+                            color={filter.is_completed === null ? '#3B82F6' : '#9CA3AF'}
                         />
                         <Button
                             title="Actives"
                             onPress={() => setFilter({ ...filter, is_completed: 0 })}
-                            color={filter.is_completed === 0 ? "#3B82F6" : "#9CA3AF"}
+                            color={filter.is_completed === 0 ? '#3B82F6' : '#9CA3AF'}
                         />
                         <Button
                             title="Terminées"
                             onPress={() => setFilter({ ...filter, is_completed: 1 })}
-                            color={filter.is_completed === 1 ? "#3B82F6" : "#9CA3AF"}
+                            color={filter.is_completed === 1 ? '#3B82F6' : '#9CA3AF'}
                         />
                     </View>
 

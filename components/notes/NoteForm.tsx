@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, Modal, Pressable, ScrollView, Alert } from "react-native";
-import tw from "twrnc";
-import { useAuth } from "@/context/AuthContext";
+import { useState, useEffect } from 'react';
+import { View, Text, TextInput, Button, Modal, Pressable, ScrollView, Alert } from 'react-native';
+import tw from 'twrnc';
+import { useAuth } from '@/context/AuthContext';
 
 type Category = {
     id: number;
@@ -11,10 +11,14 @@ type Category = {
     user_id: number | null;
 };
 
-export default function NoteForm({ refreshNotes }: { refreshNotes: () => void }) {
+type NoteFormProps = {
+    refreshNotes: () => void;
+};
+
+export default function NoteForm({ refreshNotes }: NoteFormProps) {
     const { getData } = useAuth();
-    const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
     const [categories, setCategories] = useState<Category[]>([]);
     const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
@@ -24,11 +28,11 @@ export default function NoteForm({ refreshNotes }: { refreshNotes: () => void })
     const fetchCategories = async () => {
         setLoadingCategories(true);
         try {
-            const data = await getData("categories");
+            const data = await getData('categories');
             setCategories(Array.isArray(data) ? data : []);
         } catch (error) {
-            console.error("Erreur lors du chargement des catégories:", error);
-            Alert.alert("Erreur", "Impossible de charger les catégories");
+            console.error('Erreur lors du chargement des catégories:', error);
+            Alert.alert('Erreur', 'Impossible de charger les catégories');
         } finally {
             setLoadingCategories(false);
         }
@@ -50,7 +54,7 @@ export default function NoteForm({ refreshNotes }: { refreshNotes: () => void })
 
     const handleSubmit = async () => {
         if (!title.trim()) {
-            Alert.alert("Erreur", "Le titre ne peut pas être vide");
+            Alert.alert('Erreur', 'Le titre ne peut pas être vide');
             return;
         }
 
@@ -62,21 +66,19 @@ export default function NoteForm({ refreshNotes }: { refreshNotes: () => void })
                 categories: selectedCategoryIds
             };
 
-            await getData("notes", "POST", newNote);
-            Alert.alert("Succès", "Note créée avec succès");
-            setTitle("");
-            setContent("");
+            await getData('notes', 'POST', newNote);
+            Alert.alert('Succès', 'Note créée avec succès');
+            setTitle('');
+            setContent('');
             setSelectedCategoryIds([]);
             setModalVisible(false);
             refreshNotes();
         } catch (error) {
-            console.error("Erreur lors de la création de la note:", error);
-            Alert.alert("Erreur", "Impossible de créer la note");
+            console.error('Erreur lors de la création de la note:', error);
+            Alert.alert('Erreur', 'Impossible de créer la note');
         } finally {
             setLoading(false);
         }
-
-
     };
 
     return (
@@ -129,13 +131,13 @@ export default function NoteForm({ refreshNotes }: { refreshNotes: () => void })
                                                 {
                                                     backgroundColor: selectedCategoryIds.includes(category.id)
                                                         ? category.color
-                                                        : category.color + "40"
+                                                        : category.color + '40'
                                                 }
                                             ]}
                                         >
                                             <Text
                                                 style={{
-                                                    color: selectedCategoryIds.includes(category.id) ? "white" : category.color
+                                                    color: selectedCategoryIds.includes(category.id) ? 'white' : category.color
                                                 }}
                                             >
                                                 {category.name}
@@ -152,7 +154,7 @@ export default function NoteForm({ refreshNotes }: { refreshNotes: () => void })
                                     color="#FF5722"
                                 />
                                 <Button
-                                    title={loading ? "Création..." : "Créer la note"}
+                                    title={loading ? 'Création...' : 'Créer la note'}
                                     onPress={handleSubmit}
                                     disabled={loading}
                                 />

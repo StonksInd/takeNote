@@ -1,9 +1,9 @@
-import { useAuth } from "@/context/AuthContext";
-import { View, Text, FlatList, SafeAreaView, Pressable, ActivityIndicator } from "react-native";
+import { useAuth } from '@/context/AuthContext';
+import { View, Text, FlatList, SafeAreaView, Pressable, ActivityIndicator } from 'react-native';
 import tw from 'twrnc';
-import { useState, useEffect } from "react";
-import TaskModal from "./TaskModal";
-import TaskFilter from "./TaskFilter";
+import { useState, useEffect } from 'react';
+import TaskModal from './TaskModal';
+import TaskFilter from './TaskFilter';
 
 type Subtask = {
     id: number;
@@ -50,7 +50,7 @@ export default function TaskList() {
     const fetchTasks = async () => {
         setLoading(true);
         try {
-            let endpoint = "tasks?";
+            let endpoint = 'tasks?';
             const params = [];
 
             if (filter.is_completed !== null) {
@@ -66,7 +66,7 @@ export default function TaskList() {
             setTasks(data);
             applySearchFilter(data, filter.search);
         } catch (error) {
-            console.error("Error fetching tasks:", error);
+            console.error('Error fetching tasks:', error);
         } finally {
             setLoading(false);
         }
@@ -101,10 +101,10 @@ export default function TaskList() {
 
     const toggleTaskStatus = async (taskId: number) => {
         try {
-            await getData(`tasks/${taskId}/toggle`, "PATCH");
+            await getData(`tasks/${taskId}/toggle`, 'PATCH');
             fetchTasks();
         } catch (error) {
-            console.error("Error toggling task:", error);
+            console.error('Error toggling task:', error);
         }
     };
 
@@ -138,7 +138,7 @@ export default function TaskList() {
                                 onPress={() => toggleTaskStatus(item.id)}
                                 style={tw`mr-2`}
                             >
-                                <Text>{item.is_completed ? "✅" : "◻️"}</Text>
+                                <Text>{item.is_completed ? '✅' : '◻️'}</Text>
                             </Pressable>
                             <Text style={tw`flex-1 font-bold ${item.is_completed ? 'line-through text-gray-400' : ''}`}>
                                 {item.description}
@@ -147,7 +147,7 @@ export default function TaskList() {
 
                         {item.note && (
                             <Text style={tw`text-blue-500 text-sm mt-1`}>
-                                📝 {item.note.title}
+                                {`Note: ${item.note.title}`}
                             </Text>
                         )}
 
@@ -155,7 +155,7 @@ export default function TaskList() {
                             <View style={tw`mt-2`}>
                                 {item.subtasks.map((subtask) => (
                                     <View key={subtask.id} style={tw`flex-row items-center ml-4`}>
-                                        <Text>{subtask.is_completed ? "✓" : "○"}</Text>
+                                        <Text>{subtask.is_completed ? '✓' : '○'}</Text>
                                         <Text
                                             style={tw`ml-2 text-sm ${subtask.is_completed ? 'line-through text-gray-400' : ''}`}
                                         >
@@ -171,8 +171,8 @@ export default function TaskList() {
                     <View style={tw`p-4 items-center`}>
                         <Text style={tw`text-gray-500`}>
                             {filter.is_completed !== null || filter.note_id || filter.search
-                                ? "Aucune tâche ne correspond aux filtres"
-                                : "Aucune tâche disponible"}
+                                ? 'Aucune tâche ne correspond aux filtres'
+                                : 'Aucune tâche disponible'}
                         </Text>
                     </View>
                 }
